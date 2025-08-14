@@ -91,7 +91,8 @@ function RepoArcade({ username = "ripplewave2025" }: { username?: string }) {
                   left: "50%",
                   transformOrigin: "0 0",
                   transform: `rotate(${deg}deg) translateX(${radius}%) translateY(-50%)`,
-                  animation: `orbit ${speed}s linear infinite`,
+                  animation: `orbit-${ring + 1} ${speed}s linear infinite`,
+                  animationDelay: `-${(speed / (items.length / 3)) * (i % (items.length / 3))}s`,
                   whiteSpace: "nowrap",
                 }}
                 title={r.name}
@@ -106,12 +107,6 @@ function RepoArcade({ username = "ripplewave2025" }: { username?: string }) {
           </div>
         </div>
       </div>
-      <style>{`
-        @keyframes orbit {
-          from { transform: rotate(0deg) translateX(40%) translateY(-50%); }
-          to   { transform: rotate(360deg) translateX(40%) translateY(-50%); }
-        }
-      `}</style>
     </div>
   );
 }

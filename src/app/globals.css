@@ -24,3 +24,30 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes orbit-1 {
+  from {
+    transform: rotate(0deg) translateX(42%) translateY(-50%);
+  }
+  to {
+    transform: rotate(360deg) translateX(42%) translateY(-50%);
+  }
+}
+
+@keyframes orbit-2 {
+  from {
+    transform: rotate(0deg) translateX(58%) translateY(-50%);
+  }
+  to {
+    transform: rotate(360deg) translateX(58%) translateY(-50%);
+  }
+}
+
+@keyframes orbit-3 {
+  from {
+    transform: rotate(0deg) translateX(74%) translateY(-50%);
+  }
+  to {
+    transform: rotate(360deg) translateX(74%) translateY(-50%);
+  }
+}

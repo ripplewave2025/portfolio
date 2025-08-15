@@ -2,39 +2,23 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-/* ---------- Pin your repos so they appear first in the orbit ---------- */
+/* ---------- Pin your repos so they appear first ---------- */
 const PIN_REPOS = [
-  "village-delivery-app",
-  "portfolio",
-  "aiforstudents.online",
-  "Lamahatta",
-  "LamahattaCyberhub-cyberhatta-",
-  "Homestayinhimalayasofdarjeeling",
-  "portfolio-site",
-  "aiforstudents-web",
-  "Cockpit",
-  "DarjeelingTeaAndTourism",
-  "AadikaviAwakens",
-  "publiclearning",
-  "corner-spot-website",
-  "digital-readme-upesh",
-  "mydigitalcyborg",
-  "allofme",
-  "readmethrough",
-  "landoforchids",
-  "airbnb-rooms-site",
-  "Fresho",
-  "AI-For-Beginners",
-  "SimpleSite",
-  "Techforall",
-  "Upesh0070",
+  "village-delivery-app","portfolio","aiforstudents.online","Lamahatta",
+  "LamahattaCyberhub-cyberhatta-","Homestayinhimalayasofdarjeeling","portfolio-site",
+  "aiforstudents-web","Cockpit","DarjeelingTeaAndTourism","AadikaviAwakens",
+  "publiclearning","corner-spot-website","digital-readme-upesh","mydigitalcyborg",
+  "allofme","readmethrough","landoforchids","airbnb-rooms-site","Fresho",
+  "AI-For-Beginners","SimpleSite","Techforall","Upesh0070",
 ];
 const repoKey = (r: { url?: string; name?: string }) =>
   (r?.url?.split("/").pop() || r?.name || "").toLowerCase();
 
 /* ---------- GitHub Repo Arcade ---------- */
+type RepoItem = { name: string; url: string };
+
 function RepoArcade({ username = "ripplewave2025" }: { username?: string }) {
-  const [repos, setRepos] = useState<{ name: string; url: string }[]>([]);
+  const [repos, setRepos] = useState<RepoItem[]>([]);
 
   useEffect(() => {
     fetch(`/api/github?u=${username}`)
@@ -43,12 +27,11 @@ function RepoArcade({ username = "ripplewave2025" }: { username?: string }) {
       .catch(() => {});
   }, [username]);
 
-  // Order: pinned (in your order) then the rest, capped to 24
   const items = useMemo(() => {
     const map = new Map(repos.map((r) => [repoKey(r), r]));
-    const pinned = PIN_REPOS.map((n) => map.get(n.toLowerCase())).filter(Boolean) as {
-      name: string; url: string;
-    }[];
+    const pinned = PIN_REPOS
+      .map((n) => map.get(n.toLowerCase()))
+      .filter(Boolean) as RepoItem[];
     const pinnedSet = new Set(pinned.map(repoKey));
     const rest = repos.filter((r) => !pinnedSet.has(repoKey(r)));
     return [...pinned, ...rest].slice(0, 24);
@@ -78,7 +61,7 @@ function RepoArcade({ username = "ripplewave2025" }: { username?: string }) {
                   transform: `rotate(${deg}deg) translateX(${radius}%) translateY(-50%)`,
                   animation: `orbit ${speed}s linear infinite`,
                   whiteSpace: "nowrap",
-                }}
+                } as React.CSSProperties}
                 title={r.name}
               >
                 {r.name}
@@ -102,13 +85,7 @@ function RepoArcade({ username = "ripplewave2025" }: { username?: string }) {
 }
 
 /* ---------- Constants ---------- */
-const ROLES = [
-  "Tech Titan",
-  "SaaS Slayer",
-  "Quantum Conqueror",
-  "Empire Builder",
-  "Captain Chaos",
-];
+const ROLES = ["Tech Titan","SaaS Slayer","Quantum Conqueror","Empire Builder","Captain Chaos"];
 const SKILLS = [
   "Python","JavaScript","React","Node.js","Tailwind","Kali Linux",
   "LLMs","Prompt Engineering","Automation","APIs","Git & GitHub","First-Principles Thinking",
@@ -264,26 +241,27 @@ function GlobeOrbit() {
             key={i}
             className="absolute w-2 h-2 bg-emerald-300 rounded-full shadow-[0_0_12px_2px_rgba(16,185,129,0.7)]"
             style={{
-              top: "50%", left: "50%",
+              top: "50%",
+              left: "50%",
               transform: `rotate(${(i * 360) / 12}deg) translateX(40%) translateY(-50%)`,
               transformOrigin: "0 0",
-              animation: `orbit ${6 + (i % 3)}s linear infinite` as any,
-            }}
+              animation: `orbit ${6 + (i % 3)}s linear infinite`,
+            } as React.CSSProperties}
           />
         ))}
         <div className="absolute inset-10 rounded-full border border-white/10" />
         <div className="absolute inset-0 grid place-items-center">
           <span className="text-center text-sm text-white/70 max-w-[12rem]">
-            "Make it work, make it right, make it scale."
+            &quot;Make it work, make it right, make it scale.&quot;
           </span>
         </div>
       </div>
-      <style>{`@keyframes orbit { from { transform: rotate(0deg) translateX(40%) translateY(-50%);} to { transform: rotate(360deg) translateX(40%) translateY(-50%);} }`}</style>
     </div>
   );
 }
 
-function Section({ id, title, children }: any) {
+type SectionProps = { id: string; title: string; children: React.ReactNode };
+function Section({ id, title, children }: SectionProps) {
   return (
     <section id={id} className="relative z-10 py-14 md:py-20">
       <div className="mx-auto max-w-6xl px-4">
@@ -296,7 +274,8 @@ function Section({ id, title, children }: any) {
   );
 }
 
-function Card({ title, children }: any) {
+type CardProps = { title: string; children: React.ReactNode };
+function Card({ title, children }: CardProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6 shadow-xl shadow-emerald-500/5">
       <div className="flex items-center justify-between mb-4">
@@ -355,22 +334,20 @@ function Terminal() {
   );
 }
 
+type Target = { id: string; x: number; y: number; size: number };
 function BugHunt() {
   const [running, setRunning] = useState(false);
   const [time, setTime] = useState(30);
   const [hits, setHits] = useState(0);
   const [miss, setMiss] = useState(0);
-  const [targets, setTargets] = useState<any[]>([]);
+  const [targets, setTargets] = useState<Target[]>([]);
   const boxRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!running) return;
     setTime(30); setHits(0); setMiss(0); setTargets([]);
     let t = 30;
-    const timer = setInterval(() => {
-      t -= 1; setTime(t);
-      if (t <= 0) { clearInterval(timer); setRunning(false); }
-    }, 1000);
+    const timer = setInterval(() => { t -= 1; setTime(t); if (t <= 0) { clearInterval(timer); setRunning(false); } }, 1000);
     const spawner = setInterval(() => addTarget(), 850);
     return () => { clearInterval(timer); clearInterval(spawner); };
   }, [running]);
@@ -409,7 +386,7 @@ function BugHunt() {
             key={t.id}
             onClick={(e) => { e.stopPropagation(); hit(t.id); }}
             className="absolute rounded-full grid place-items-center border border-emerald-300/40 bg-emerald-500/20 hover:bg-emerald-400/40 shadow-[0_0_18px_2px_rgba(16,185,129,0.45)]"
-            style={{ left: t.x, top: t.y, width: t.size, height: t.size }}
+            style={{ left: t.x, top: t.y, width: t.size, height: t.size } as React.CSSProperties}
             title="Fix this bug!"
           >
             🐛
@@ -419,7 +396,9 @@ function BugHunt() {
           <div className="absolute inset-0 grid place-items-center text-center p-6">
             <div className="text-white/80">
               <div className="text-lg font-semibold">Aim Trainer</div>
-              <div className="text-sm mt-1">Click the 🐛 as they appear. 30 seconds. Accuracy matters.</div>
+              <div className="text-sm mt-1">
+                Click the 🐛 as they appear. 30 seconds. Accuracy matters.
+              </div>
             </div>
           </div>
         )}
@@ -456,7 +435,9 @@ function Projects() {
           </div>
         </div>
       ))}
-      <div className="rounded-2xl border border-dashed border-white/15 p-5 text-white/60">Drop your next build here. Ship weekly, iterate daily.</div>
+      <div className="rounded-2xl border border-dashed border-white/15 p-5 text-white/60">
+        Drop your next build here. Ship weekly, iterate daily.
+      </div>
     </div>
   );
 }
@@ -476,7 +457,9 @@ function Contact() {
     <div className="grid md:grid-cols-2 gap-6">
       <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
         <div className="font-semibold">Let’s build.</div>
-        <div className="text-white/70 mt-1 text-sm">Freelance, collab, or founder-to-founder. Zero fluff, maximum impact.</div>
+        <div className="text-white/70 mt-1 text-sm">
+          Freelance, collab, or founder-to-founder. Zero fluff, maximum impact.
+        </div>
         <div className="mt-4 flex flex-wrap gap-3">
           <CopyEmail />
           <a className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm" href="https://x.com/upeshinmars" target="_blank" rel="noreferrer">X / Twitter</a>
@@ -487,8 +470,12 @@ function Contact() {
       </div>
       <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
         <div className="font-semibold">One-liner</div>
-        <div className="text-white/70 mt-1 text-sm">"I debug human workflows like a sysadmin, then automate them like an AI engineer."</div>
-        <div className="mt-3 text-white/60 text-sm">Available for: AI automation, onboarding funnels, dev-tools, trust/identity primitives.</div>
+        <div className="text-white/70 mt-1 text-sm">
+          &quot;I debug human workflows like a sysadmin, then automate them like an AI engineer.&quot;
+        </div>
+        <div className="mt-3 text-white/60 text-sm">
+          Available for: AI automation, onboarding funnels, dev-tools, trust/identity primitives.
+        </div>
       </div>
     </div>
   );
@@ -517,7 +504,8 @@ function CopyEmail() {
   );
 }
 
-function ActionButton({ children, ...props }: any) {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { children: React.ReactNode };
+function ActionButton({ children, ...props }: ButtonProps) {
   return (
     <button {...props} className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm disabled:opacity-50">
       {children}
